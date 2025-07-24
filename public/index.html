@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Calendly Demo</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 2rem;
+      }
+      #calendly-container {
+        margin-top: 1rem;
+        height: 800px; /* ✅ enough for full widget */
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📅 Smart “Book a Meeting” Demo</h1>
+    <button id="book-btn">Book a Meeting</button>
+    <div id="calendly-container"></div>
+
+    <script
+      src="https://assets.calendly.com/assets/external/widget.js"
+      async
+    ></script>
+    <script>
+      document
+        .getElementById("book-btn")
+        .addEventListener("click", async () => {
+          const container = document.getElementById("calendly-container");
+          container.innerHTML = "⏳ Loading calendar...";
+
+          try {
+            const res = await fetch("/api/choose");
+            const { widgetUrl, winner } = await res.json();
+
+            container.innerHTML = ""; // Clear loading text
+
+            Calendly.initInlineWidget({
+              url: widgetUrl,
+              parentElement: container,
+              prefill: {},
+              utm: {},
+            });
+
+            console.log(`➡️ Using calendar ${winner}`);
+          } catch (err) {
+            console.error("❌ Error loading calendar:", err);
+            container.innerHTML = "⚠️ Failed to load the booking calendar.";
+          }
+        });
+    </script>
+  </body>
+</html>
